@@ -11,8 +11,10 @@ var bot = new TelegramBot(auth.TelegramBotToken, {
 });
 
 
-
 var mything = new ArduinoCLoud(auth.username, auth.name, auth.thing_ID, auth.thing_PSW);
+
+mything.addExternalProperty("LedMatrix","ashtag");
+mything.addProperty("newIntent");
 
 const actions = {
     send(request, response) {
@@ -40,6 +42,18 @@ const client = new Wit({
 client.interactive();
 
 
+mything.on("propertyChanged", function(propertyName, propertyValue) {
+    console.log("propertyChanged");
+    console.log("propertyName " + propertyName);
+    console.log("propertyValue " + propertyValue);
+});
+
+mything.on("ExternalPropertyChanged", function(deviceName, propertyName, propertyValue) {
+    console.log("ExternalPropertyChangedpropertyChanged");
+    console.log("deviceName " + deviceName);
+    console.log("propertyName " + propertyName);
+    console.log("propertyValue " + propertyValue);
+});
 
 
 // Any kind of message
@@ -55,8 +69,12 @@ bot.on('message', function(msg) {
             if(data.entities!=={}){
 
               //something about the termostat happened
-              if (data.entities.temperature_feel){
+              if (data.entities.intent[0].value=="regulate temperature"){
+
+                mything.writeProperty("newIntent","regulate temperature");
+
                 temperature_feel=data.entities.temperature_feel[0];
+                
                 if (temperature_feel.value=="cold"){
                   console.log("COLD");
                   bot.sendMessage(chatId, "current temperature is");
@@ -67,8 +85,33 @@ bot.on('message', function(msg) {
 
                 }
               }
+
+
+              //something about the ledMatrix happened
+              if (data.entities.intent[0].value=="ChangeMessage"){
+                mything.writeProperty("newIntent","ChangeMessage");
+
+                try {
+                  newMessage=data.entities.hashtag[0].value;
+
+                } catch (e) {
+                  newMessage=null;
+                  console.log ("didn't specify any hashtag");
+                }
+
+                if (!newMessage){
+                  bot.sendMessage(chatId, "which hashtag do you want to follow?");
+
+                }else{
+                  console.log(newMessage);
+                  bot.sendMessage(chatId, "the ledMatrix is now following "+newMessage);
+                  mything.writeExternalProperty("LedMatrix","ashtag",newMessage);
+
+                }
+              }
+
+
             }
         }).catch(console.error);
-
 
 });
