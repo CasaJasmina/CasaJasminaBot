@@ -1,0 +1,29 @@
+{
+  "name": "casa_jasmina_bot",
+  "version": "1.0.0",
+  "description": "connect your home to wit.ai",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CasaJasmina/CasaJasminaBot.git"
+  },
+  "keywords": [
+    "ai",
+    "bot",
+    "home",
+    "automation"
+  ],
+  "author": "Lorenzo Romagnoli",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/CasaJasmina/CasaJasminaBot/issues"
+  },
+  "homepage": "https://github.com/CasaJasmina/CasaJasminaBot#readme",
+  "dependencies": {
+    "arduino_cloud": "^1.0.2",
+    "node-telegram-bot-api": "^0.23.3"
+  }
+}
