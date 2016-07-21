@@ -1,9 +1,8 @@
-var auth=require('./auth.js');
+var auth = require('./auth.js');
 
 var TelegramBot = require('node-telegram-bot-api');
-var ArduinoCLoud = require ('arduino_cloud');
-var Wit = require ('node-wit').Wit;
-
+var ArduinoCLoud = require('arduino_cloud');
+var Wit = require('node-wit').Wit;
 
 // Setup polling way
 var bot = new TelegramBot(auth.TelegramBotToken, {
@@ -13,7 +12,8 @@ var bot = new TelegramBot(auth.TelegramBotToken, {
 
 var mything = new ArduinoCLoud(auth.username, auth.name, auth.thing_ID, auth.thing_PSW);
 
-mything.addExternalProperty("LedMatrix","ashtag");
+mything.addExternalProperty("LedMatrix", "ashtag");
+//mything.addExternalProperty("waterPump", "open");
 mything.addProperty("newIntent");
 
 const actions = {
@@ -36,7 +36,7 @@ const actions = {
 };
 
 const client = new Wit({
-    accessToken:auth.accessToken,
+    accessToken: auth.accessToken,
     actions
 });
 client.interactive();
@@ -49,66 +49,112 @@ mything.on("propertyChanged", function(propertyName, propertyValue) {
 });
 
 mything.on("ExternalPropertyChanged", function(deviceName, propertyName, propertyValue) {
-    console.log("ExternalPropertyChangedpropertyChanged");
+    console.log("ExternalPropertyChanged");
     console.log("deviceName " + deviceName);
     console.log("propertyName " + propertyName);
     console.log("propertyValue " + propertyValue);
+
+
+    // if (deviceName == "waterPump") {
+    //     if (propertyName == "open") {
+    //         if (propertyValue == "true") {
+    //           bot.sendMessage(auth.telegramAdmin, "Watch out! water is running");
+    //         }else{
+    //           bot.sendMessage(auth.telegramAdmin, "water is now closed");
+    //         }
+    //     }
+    // }
 });
 
 
 // Any kind of message
 bot.on('message', function(msg) {
     var chatId = msg.chat.id;
-    var message=msg.text;
+    var message = msg.text;
 
     console.log(message);
+
+    console.log(chatId);
 
     client.message(message)
         .then((data) => {
             console.log('Yay, got Wit.ai response: ' + JSON.stringify(data));
-            if(data.entities!=={}){
+            if (data.entities !== {}) {
 
-              //something about the termostat happened
-              if (data.entities.intent[0].value=="regulate temperature"){
+                //something about the termostat happened
+                if (data.entities.intent[0].value == "regulate temperature") {
 
-                mything.writeProperty("newIntent","regulate temperature");
+                    mything.writeProperty("newIntent", "regulate temperature");
 
-                temperature_feel=data.entities.temperature_feel[0];
-                
-                if (temperature_feel.value=="cold"){
-                  console.log("COLD");
-                  bot.sendMessage(chatId, "current temperature is");
+                    temperature_feel = data.entities.temperature_feel[0];
 
-                }else if(temperature_feel.value=="hot"){
-                  console.log("HOT");
-                  bot.sendMessage(chatId, "unfortutaly the air conditioning is not present, maybe you can open the window!");
+                    if (temperature_feel.value == "cold") {
+                        console.log("COLD");
+                        bot.sendMessage(chatId, "current temperature is");
 
-                }
-              }
+                    } else if (temperature_feel.value == "hot") {
+                        console.log("HOT");
+                        bot.sendMessage(chatId, "unfortutaly the air conditioning is not present, maybe you can open the window!");
 
-
-              //something about the ledMatrix happened
-              if (data.entities.intent[0].value=="ChangeMessage"){
-                mything.writeProperty("newIntent","ChangeMessage");
-
-                try {
-                  newMessage=data.entities.hashtag[0].value;
-
-                } catch (e) {
-                  newMessage=null;
-                  console.log ("didn't specify any hashtag");
+                    }
                 }
 
-                if (!newMessage){
-                  bot.sendMessage(chatId, "which hashtag do you want to follow?");
 
-                }else{
-                  console.log(newMessage);
-                  bot.sendMessage(chatId, "the ledMatrix is now following "+newMessage);
-                  mything.writeExternalProperty("LedMatrix","ashtag",newMessage);
+                //something about the ledMatrix happened
+                if (data.entities.intent[0].value == "ChangeMessage") {
+                    mything.writeProperty("newIntent", "ChangeMessage");
 
+                    try {
+                        newMessage = data.entities.hashtag[0].value;
+
+                    } catch (e) {
+                        newMessage = null;
+                        console.log("didn't specify any hashtag");
+                    }
+
+                    if (!newMessage) {
+                        bot.sendMessage(chatId, "which hashtag do you want to follow?");
+
+                    } else {
+                        console.log(newMessage);
+                        bot.sendMessage(chatId, "the ledMatrix is now following " + newMessage);
+                        mything.writeExternalProperty("LedMatrix", "ashtag", newMessage);
+
+                    }
                 }
-              }
+
+
+
+
+                //something about the garden happened
+                if (data.entities.intent[0].value == "checkGarden") {
+                    mything.writeProperty("newIntent", "checkGarden");
+
+                    try {
+                        action = data.entities.action[0].value;
+
+                    } catch (e) {
+                        action = null;
+                        console.log("no action here");
+                    }
+
+                    if (!action) {
+                        bot.sendMessage(chatId, "plants look allright");
+
+                    } else {
+                        if (action == "open") {
+                            console.log(action);
+                            bot.sendMessage(chatId, "opening the water now ");
+                            mything.writeExternalProperty("waterPump", "open", "true");
+                        } else {
+                            bot.sendMessage(chatId, "had enough water!");
+                            mything.writeExternalProperty("waterPump", "open", "false");
+                        }
+
+
+
+                    }
+                }
 
 
             }

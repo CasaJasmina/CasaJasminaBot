@@ -1,0 +1,24 @@
+[
+  {
+    "intent":"regulate temperature",
+    "possible_values":[
+      {
+        "when":"cold",
+        "action":"increse_temperature()",
+        "response":[
+          {"text":"you are cold"},
+          {"text":"ok, I'll take care of it"}
+        ]
+      },
+      {
+        "when":"hot",
+        "action":"lower_temperature()",
+        "response":[
+          {"text":"you are warm"},
+          {"text":"casaJasmina is warm"},
+          {"text":"ok, I'll take care of it"}
+        ]
+      }
+    ]
+  }
+]
