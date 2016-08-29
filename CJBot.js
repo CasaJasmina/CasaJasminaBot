@@ -101,9 +101,6 @@ bot.on('message', function(msg) {
 
                             random_response_index=Math.floor(Math.random()*possible_values[k].response.length);
 
-                            // console.log(possible_values[k].response.length);
-                            //
-                            // console.log(Math.random(possible_values[k].response.length));
 
                             console.log("random index", random_response_index);
 
@@ -136,23 +133,7 @@ bot.on('message', function(msg) {
 
 
 
-                // //something about the termostat happened
-                // if (data.entities.intent[0].value == "regulate temperature") {
-                //
-                //     mything.writeProperty("newIntent", "regulate temperature");
-                //
-                //     temperature_feel = data.entities.temperature_feel[0];
-                //
-                //     if (temperature_feel.value == "cold") {
-                //         console.log("COLD");
-                //         bot.sendMessage(chatId, "current temperature is");
-                //
-                //     } else if (temperature_feel.value == "hot") {
-                //         console.log("HOT");
-                //         bot.sendMessage(chatId, "unfortutaly the air conditioning is not present, maybe you can open the window!");
-                //
-                //     }
-                // }
+
 
 
                 // //something about the ledMatrix happened
