@@ -1,70 +1,92 @@
 [{
-        "thermostat": {
-            "properties": [{
-                "name": "temperature",
-                "notify": "false",
-            }],
-            "intent": "regulate temperature",
-            "possible_values": [{
-                "if": "cold",
-                "action": "increse_temperature()",
-                "response": [{
-                    "text": "you are cold"
-                }, {
-                    "text": "ok, I'll take care of it"
-                }]
-            }, {
-                "if": "hot",
-                "action": "lower_temperature()",
-                "response": [{
-                    "text": "you are warm"
-                }, {
-                    "text": "casaJasmina is warm"
-                }, {
-                    "text": "ok, I'll take care of it"
-                }]
-            }]
-        }
-    },
-
-    {
-        "LedMatrix": {
-            "intent": "changeMessage",
-            "possible_values": [],
-            "action": "changeMessage()",
-            "response": [{
-                "text": "changing message on the LedMatrix"
-            }, {
-                "text": "the LedMatrix is now following"
-            }]
-        }
-    },
-
-
-    {
-        "waterPump": {
-          "properties": [{
-              "name": "open",
-              "notify": "change",
-          }],
-            "intent": "checkGarden",
-            "possible_values": [{
-                "if": "open",
-                "action": "openWater()",
-                "response": [{
-                    "text": "opening the water now"
-                }, {
-                    "text": "water is flowing"
-                }]
-            }, {
-                "if": "close",
-                "action": "closeWater()",
-                "response": [{
-                    "text": "had enought water"
-                }, {
-                    "text": "plants look allright"
-                }]
-            }]
-        }
+    "thermostat": {
+      "properties": [{
+        "name": "temperature",
+        "notify": "false"
+      }],
+      "intent": "regulate temperature",
+      "possible_values": [{
+        "if": "cold",
+        "action": "increse_temperature()",
+        "response": [{
+          "text": "you are cold"
+        }, {
+          "text": "ok, I'll take care of it"
+        }]
+      }, {
+        "if": "hot",
+        "action": "lower_temperature()",
+        "response": [{
+          "text": "you are warm"
+        }, {
+          "text": "casaJasmina is warm"
+        }, {
+          "text": "ok, I'll take care of it"
+        }]
+      }]
     }
+  },
+
+  {
+    "LedMatrix": {
+      "intent": "changeMessage",
+      "possible_values": [],
+      "action": "changeMessage()",
+      "response": [{
+        "text": "changing message on the LedMatrix"
+      }, {
+        "text": "the LedMatrix is now following"
+      }]
+    }
+  },
+
+  {
+    "sensorTower": {
+      "intent": [{
+        "name": "light"
+      }, {
+        "name": "noisey"
+      }],
+      "properties": [{
+        "name": "light"
+      }, {
+        "name": "sound"
+      }],
+      "possible_values": [],
+      "response": [{
+        "text": "light checking"
+      }, {
+        "text": "light!"
+      }]
+    }
+  },
+
+
+  {
+    "waterPump": {
+      "properties": [{
+        "name": "open",
+        "notify": "change"
+      }],
+      "intent": "checkGarden",
+      "possible_values": [{
+        "if": "open",
+        "action": "openWater()",
+        "response": [{
+          "text": "opening the water now"
+        }, {
+          "text": "water is flowing"
+        }]
+      }, {
+        "if": "close",
+        "action": "closeWater()",
+        "response": [{
+          "text": "had enought water"
+        }, {
+          "text": "plants look allright"
+        }]
+      }]
+    }
+  }
+
 ]
