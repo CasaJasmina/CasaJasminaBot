@@ -17,9 +17,11 @@ var mything = new ArduinoCLoud(auth.username, auth.name, auth.thing_ID, auth.thi
 
 mything.addExternalProperty("LedMatrix", "ashtag");
 mything.addExternalProperty("sensorTower", "light");
+mything.addExternalProperty("sensorTower", "temperature");
 mything.addExternalProperty("sensorTower", "Sound");
 mything.addExternalProperty("waterPump", "Mode");
-mything.addExternalProperty("Door", "code");
+mything.addExternalProperty("Thermostat", "DefoultTemp");
+// mything.addExternalProperty("Door", "code");
 mything.addExternalProperty("Door", "open");
 mything.addProperty("newIntent");
 
@@ -51,18 +53,18 @@ client.interactive;
 var cosa = {};
 
 mything.on("propertyChanged", function(propertyName, propertyValue) {
-  console.log("propertyChanged");
-  console.log("propertyName " + propertyName);
-  console.log("propertyValue " + propertyValue);
+  // console.log("propertyChanged");
+  // console.log("propertyName " + propertyName);
+  // console.log("propertyValue " + propertyValue);
   cosa[propertyName] = propertyValue;
 
 });
 
 mything.on("ExternalPropertyChanged", function(deviceName, propertyName, propertyValue) {
-  console.log("ExternalPropertyChanged");
-  console.log("deviceName " + deviceName);
-  console.log("propertyName " + propertyName);
-  console.log("propertyValue " + propertyValue);
+  // console.log("ExternalPropertyChanged");
+  // console.log("deviceName " + deviceName);
+  // console.log("propertyName " + propertyName);
+  // console.log("propertyValue " + propertyValue);
   cosa[propertyName] = propertyValue;
 });
 
@@ -198,24 +200,47 @@ bot.on('message', function(msg) {
             mything.writeExternalProperty("Door", "open", "true");
           }
 
-          try {
-            newMessage = data.entities.enteringCode[0].value;
-
-          } catch (e) {
-            newMessage = null;
-            console.log("The current code is " + cosa.code);
-          }
-
-          if (!newMessage && !action) {
-            bot.sendMessage(chatId, "which code do you want to set?");
-
-          } else if(newMessage){
-            console.log(newMessage);
-            bot.sendMessage(chatId, "the entering code is now " + newMessage);
-            mything.writeExternalProperty("Door", "code", newMessage);
-
-          }
+          // try {
+          //   newMessage = data.entities.enteringCode[0].value;
+          //
+          // } catch (e) {
+          //   newMessage = null;
+          //   console.log("The current code is " + cosa.code);
+          // }
+          //
+          // if (!newMessage && !action) {
+          //   bot.sendMessage(chatId, "which code do you want to set?");
+          //
+          // } else if(newMessage){
+          //   console.log(newMessage);
+          //   bot.sendMessage(chatId, "the entering code is now " + newMessage);
+          //   mything.writeExternalProperty("Door", "code", newMessage);
+          //
+          // }
         }
+
+        // //something about the thermostat happened
+        if (data.entities.intent[0].value == "regulate temperature") {
+          mything.writeProperty("newIntent", "thermostat");
+
+          try {
+            action = data.entities.temperature_feel[0].value;
+          } catch (e) {
+            action = null;
+            console.log("no action here");
+          }
+          if (action == "cold") {
+            console.log(parseInt(cosa.temperature));
+
+            if(parseInt(cosa.temperature) > 24 ){
+              bot.sendMessage(chatId, "It's already " +cosa.temperature+" degree inside!\nI can't help you :(");
+            }
+            else{
+              bot.sendMessage(chatId, "Ok, let me manage this");
+              mything.writeExternalProperty("Thermostat", "DefoultTemp", "25");
+            }
+
+          }}
 
         //something about the garden happened
         if (data.entities.intent[0].value == "checkGarden") {
